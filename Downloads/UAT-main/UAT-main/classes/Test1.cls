@@ -2,9 +2,9 @@ public class Test1 {
 
     
     public static void getPDFBlobFromQuote(Id quoteId) {
-        // Query for the ContentDocumentLink related to the Quote
+        // Query for the ContentDocumentLink related to the Quote-testgithub
         set<string> contentId = new set<string>();
-        List<ContentDocumentLink> docLinks = [
+        List<ContentDocumentLink> docLinks = [ 
             SELECT ContentDocumentId 
             FROM ContentDocumentLink 
             WHERE LinkedEntityId = :quoteId 
