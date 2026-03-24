@@ -75,10 +75,9 @@ jobs:
 
       - name: Deploy to UAT
         run: |
-           pwd
-           ls -la
-		   sf project deploy start
-        working-directory: .
+           sf project deploy start \
+             --metadata-dir . \
+             --test-level RunLocalTests
 		
 	  - name: Debug Files
         run: |
