@@ -7,6 +7,6 @@
   ],
   "name": "UAT",
   "namespace": "",
-  "sfdcLoginUrl": "https://test.salesforce.com",
-  "sourceApiVersion": "59.0"
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "60.0"
 }
