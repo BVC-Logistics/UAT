@@ -75,7 +75,16 @@ jobs:
 
       - name: Deploy to UAT
         run: |
-          sf project deploy start --test-level RunLocalTests
+           pwd
+           ls -la
+		   sf project deploy start
+        working-directory: .
+		
+	  - name: Debug Files
+        run: |
+          pwd
+          ls -la
+          find . -name sfdx-project.json
 
   deploy-prod:
     if: github.event_name == 'workflow_dispatch'
