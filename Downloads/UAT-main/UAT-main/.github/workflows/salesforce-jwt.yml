@@ -76,7 +76,7 @@ jobs:
       - name: Deploy to UAT
         run: |
            sf project deploy start \
-             --metadata-dir . \
+             --source-dir force-app \
              --test-level RunLocalTests
 		
 	  - name: Debug Files
