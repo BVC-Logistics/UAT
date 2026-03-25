@@ -1,121 +1,123 @@
 name: Salesforce JWT CI CD
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  validate-pr:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    environment: uat
+  validate-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
 
-      - name: Install Salesforce CLI
-        run: npm install --global @salesforce/cli
+      - name: Verify Salesforce CLI
+        run: sf --version
 
-      - name: Verify Salesforce CLI
-        run: sf --version
+      - name: Authenticate to UAT using JWT
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME }}" \
+            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
+            --set-default
 
-      - name: Authenticate to UAT using JWT
-        run: |
-          echo "${{ secrets.SF_JWT_KEY }}" > server.key
-          sf org login jwt \
-            --client-id "${{ secrets.SF_CLIENT_ID }}" \
-            --jwt-key-file server.key \
-            --username "${{ secrets.SF_USERNAME }}" \
-            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
-            --set-default
+      - name: Validate deployment in UAT
+        run: |
+          sf project deploy start \
+            --dry-run \
+            --source-dir force-app \
+            --test-level RunLocalTests
 
-      - name: Validate deployment in UAT
-        run: |
-          sf project deploy start --dry-run --test-level RunLocalTests
+  deploy-uat:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  deploy-uat:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment: uat
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Verify Salesforce CLI
+        run: sf --version
 
-      - name: Install Salesforce CLI
-        run: npm install --global @salesforce/cli
+      - name: Authenticate Salesforce (UAT)
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME }}" \
+            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
+            --set-default
 
-      - name: Verify Salesforce CLI
-        run: sf --version
-
-      - name: Authenticate to UAT using JWT
-        run: |
-          echo "${{ secrets.SF_JWT_KEY }}" > server.key
-          sf org login jwt \
-            --client-id "${{ secrets.SF_CLIENT_ID }}" \
-            --jwt-key-file server.key \
-            --username "${{ secrets.SF_USERNAME }}" \
-            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
-            --set-default
-
-      - name: Deploy to UAT
-        run: |
-           pwd
-           ls -la
-		   sf project deploy start
-        working-directory: .
-		
-	  - name: Debug Files
+      - name: Debug workspace
         run: |
           pwd
           ls -la
           find . -name sfdx-project.json
+          find . -name "*.cls" | head -10
 
-  deploy-prod:
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    environment: prod
+      - name: Deploy to UAT
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  deploy-prod:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Install Salesforce CLI
-        run: npm install --global @salesforce/cli
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
 
-      - name: Verify Salesforce CLI
-        run: sf --version
+      - name: Verify Salesforce CLI
+        run: sf --version
 
-      - name: Authenticate to Production using JWT
-        run: |
-          echo "${{ secrets.SF_JWT_KEY }}" > server.key
-          sf org login jwt \
-            --client-id "${{ secrets.SF_CLIENT_ID }}" \
-            --jwt-key-file server.key \
-            --username "${{ secrets.SF_USERNAME }}" \
-            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
-            --set-default
+      - name: Authenticate to Production using JWT
+        run: |
+          echo "${{ secrets.SF_JWT_KEY }}" > server.key
+          sf org login jwt \
+            --client-id "${{ secrets.SF_CLIENT_ID }}" \
+            --jwt-key-file server.key \
+            --username "${{ secrets.SF_USERNAME }}" \
+            --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
+            --set-default
 
-      - name: Deploy to Production
-        run: |
-          sf project deploy start --test-level RunLocalTests
+      - name: Deploy to Production
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests
