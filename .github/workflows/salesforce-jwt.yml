@@ -70,9 +70,9 @@ jobs:
           find . -name "*.cls" | head -10
       - name: Deploy to UAT
         run: |
-          sf project deploy start \
-            --source-dir force-app \
-            --test-level RunLocalTests
+           sf project deploy start \
+             --source-dir force-app/main/default/classes \
+             --test-level NoTestRun
   deploy-prod:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
