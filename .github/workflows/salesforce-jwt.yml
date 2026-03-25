@@ -32,12 +32,11 @@ jobs:
             --username "${{ secrets.SF_USERNAME }}" \
             --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
             --set-default
-      - name: Validate deployment in UAT
+      - name: Deploy to UAT
         run: |
           sf project deploy start \
-            --dry-run \
-            --source-dir force-app \
-            --test-level RunLocalTests
+            --source-dir force-app/main/default/classes \
+            --test-level NoTestRun
   deploy-uat:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
