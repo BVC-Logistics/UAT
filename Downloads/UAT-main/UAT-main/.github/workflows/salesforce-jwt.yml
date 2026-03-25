@@ -30,7 +30,7 @@ jobs:
         run: sf --version
 
       - name: Authenticate to UAT using JWT
-        working-directory: Downloads/UAT-main/UAT-main   # ✅ ADD THIS
+        working-directory: Downloads/UAT-main/UAT-main   
         run: |
           echo "${{ secrets.SF_JWT_KEY }}" > server.key
           sf org login jwt \
@@ -41,7 +41,7 @@ jobs:
             --set-default
 
       - name: Validate deployment in UAT
-        working-directory: Downloads/UAT-main/UAT-main   # ✅ ADD THIS
+        working-directory: Downloads/UAT-main/UAT-main   
         run: |
           sf project deploy start --dry-run --test-level RunLocalTests --source-dir force-app
 
@@ -66,7 +66,7 @@ jobs:
         run: sf --version
 
       - name: Authenticate Salesforce (UAT)
-        working-directory: Downloads/UAT-main/UAT-main   # ✅ ADD THIS
+        working-directory: Downloads/UAT-main/UAT-main   
         run: |
           echo "${{ secrets.SF_JWT_KEY }}" > server.key
           sf org login jwt \
@@ -77,7 +77,7 @@ jobs:
             --set-default
 
       - name: Deploy to UAT
-        working-directory: Downloads/UAT-main/UAT-main   # ✅ ADD THIS
+        working-directory: Downloads/UAT-main/UAT-main   
         run: |
           sf project deploy start \
             --source-dir force-app \
@@ -104,7 +104,7 @@ jobs:
         run: sf --version
 
       - name: Authenticate to Production using JWT
-        working-directory: Downloads/UAT-main/UAT-main   # ✅ ADD THIS
+        working-directory: Downloads/UAT-main/UAT-main   
         run: |
           echo "${{ secrets.SF_JWT_KEY }}" > server.key
           sf org login jwt \
@@ -115,7 +115,7 @@ jobs:
             --set-default
 
       - name: Deploy to Production
-        working-directory: Downloads/UAT-main/UAT-main   # ✅ ADD THIS
+        working-directory: Downloads/UAT-main/UAT-main   
         run: |
           sf project deploy start \
             --source-dir force-app \
