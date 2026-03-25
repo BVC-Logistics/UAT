@@ -76,12 +76,12 @@ jobs:
             --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
             --set-default
 
-      - name: Deploy to UAT
-        working-directory: Downloads/UAT-main/UAT-main   
-        run: |
-          sf project deploy start \
-            --source-dir force-app \
-            --test-level RunLocalTests
+       - name: Deploy to UAT
+         run: |
+           cd Downloads/UAT-main/UAT-main
+           sf project deploy start \
+             --source-dir force-app \
+             --test-level RunLocalTests
 
   deploy-prod:
     if: github.event_name == 'workflow_dispatch'
