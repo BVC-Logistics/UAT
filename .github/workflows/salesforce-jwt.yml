@@ -121,4 +121,3 @@ jobs:
           sf project deploy start \
             --source-dir force-app \
             --test-level RunLocalTests
-EOF
