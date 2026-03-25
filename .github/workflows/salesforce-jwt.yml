@@ -41,7 +41,10 @@ jobs:
 
       - name: Validate deployment in UAT
         run: |
-          sf project deploy start --dry-run --test-level RunLocalTests
+          sf project deploy start \
+            --dry-run \
+            --source-dir force-app \
+            --test-level RunLocalTests
 
   deploy-uat:
     if: github.event_name == 'push'
@@ -75,10 +78,9 @@ jobs:
 
       - name: Deploy to UAT
         run: |
-           pwd
-           ls -la
-		   sf project deploy start
-        working-directory: .
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests
 		
 	  - name: Debug Files
         run: |
@@ -118,4 +120,6 @@ jobs:
 
       - name: Deploy to Production
         run: |
-          sf project deploy start --test-level RunLocalTests
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level RunLocalTests
