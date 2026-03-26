@@ -32,10 +32,11 @@ jobs:
             --username "${{ secrets.SF_USERNAME }}" \
             --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
             --set-default
-      - name: Deploy to UAT
+      - name: Validate deployment in UAT
         run: |
           sf project deploy start \
-            --source-dir force-app/main/default/classes \
+            --dry-run \
+            --source-dir force-app \
             --test-level NoTestRun
   deploy-uat:
     if: github.event_name == 'push'
@@ -61,17 +62,11 @@ jobs:
             --username "${{ secrets.SF_USERNAME }}" \
             --instance-url "${{ secrets.SF_INSTANCE_URL }}" \
             --set-default
-      - name: Debug workspace
-        run: |
-          pwd
-          ls -la
-          find . -name sfdx-project.json
-          find . -name "*.cls" | head -10
       - name: Deploy to UAT
         run: |
-           sf project deploy start \
-             --source-dir force-app/main/default/classes \
-             --test-level NoTestRun
+          sf project deploy start \
+            --source-dir force-app \
+            --test-level NoTestRun
   deploy-prod:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -101,3 +96,4 @@ jobs:
           sf project deploy start \
             --source-dir force-app \
             --test-level RunLocalTests
+ENDOFFILE
